@@ -1,0 +1,57 @@
+{
+  "name": "aom/howhow",
+  "description": "Document management system with more then loads of capabilities",
+  "authors": [
+    {
+      "name": "Radu Dragomir",
+      "email": "noramarth@aom.ro",
+      "role": "Developer"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://repo.packagist.com/artofmadness/"
+    },
+    {
+      "packagist.org": false
+    }
+  ],
+  "type": "project",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "AOMCollection\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "AOM\\Tests\\Collection\\": "tests/"
+    }
+  },
+  "require": {
+    "php": "^7.2"
+  },
+  "suggest": {
+    "ext-apcu": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^8"
+  },
+  "config": {
+    "preferred-install": {
+      "*": "dist"
+    },
+    "sort-packages": true
+  },
+  "scripts": {
+    "auto-scripts": {
+    },
+    "post-install-cmd": [
+      "@auto-scripts"
+    ],
+    "post-update-cmd": [
+      "@auto-scripts"
+    ]
+  }
+}
