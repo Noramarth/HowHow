@@ -1,60 +1,65 @@
 {
-  "name": "aom/howhow",
-  "description": "Document management system with more then loads of capabilities",
-  "authors": [
-    {
-      "name": "Radu Dragomir",
-      "email": "noramarth@aom.ro",
-      "role": "Developer"
-    }
-  ],
-  "type": "project",
-  "license": "MIT",
-  "autoload": {
-    "psr-4": {
-      "HowHoW\\": "src/"
-    }
-  },
-  "require": {
-    "php": "^7.4",
-    "react/event-loop":  "^1.1.0",
-    "react/promise": "^2.7",
-    "ext-ctype": "*",
-    "ext-iconv": "*",
-    "symfony/console": "^4.3",
-    "symfony/dotenv": "^4.3",
-    "symfony/flex": "^1.3",
-    "symfony/framework-bundle": "^4.3",
-    "symfony/yaml": "^4.3",
-    "apisearch-io/symfony-react-server": "dev-master"
-  },
-  "require-dev": {
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "AOM\\Tests\\HowHow\\": "tests/"
-    }
-  },
-
-  "suggest": {
-    "ext-apcu": "*"
-  },
-  "config": {
-    "preferred-install": {
-      "*": "dist"
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": "^7.4",
+        "ext-ctype": "*",
+        "ext-iconv": "*",
+        "symfony/console": "4.4.*",
+        "symfony/dotenv": "4.4.*",
+        "symfony/flex": "^1.3.1",
+        "symfony/framework-bundle": "4.4.*",
+        "symfony/yaml": "4.4.*",
+        "apisearch-io/symfony-async-http-kernel": "*",
+        "apisearch-io/symfony-react-server": "dev-master"
     },
-    "sort-packages": true
-  },
-  "scripts": {
-    "auto-scripts": {
+    "require-dev": {
     },
-    "post-install-cmd": [
-      "@auto-scripts"
-    ],
-    "post-update-cmd": [
-      "@auto-scripts"
-    ]
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
+    "config": {
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
+    },
+    "replace": {
+        "paragonie/random_compat": "2.*",
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-php71": "*",
+        "symfony/polyfill-php70": "*",
+        "symfony/polyfill-php56": "*"
+    },
+    "scripts": {
+        "auto-scripts": {
+            "cache:clear": "symfony-cmd",
+            "assets:install %PUBLIC_DIR%": "symfony-cmd"
+        },
+        "post-install-cmd": [
+            "@auto-scripts"
+        ],
+        "post-update-cmd": [
+            "@auto-scripts"
+        ]
+    },
+    "conflict": {
+        "symfony/symfony": "*"
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": false,
+            "require": "4.4.*"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
