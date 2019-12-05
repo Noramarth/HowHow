@@ -8,35 +8,35 @@
       "role": "Developer"
     }
   ],
-  "repositories": [
-    {
-      "type": "composer",
-      "url": "https://repo.packagist.com/artofmadness/"
-    },
-    {
-      "packagist.org": false
-    }
-  ],
   "type": "project",
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "AOMCollection\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "AOM\\Tests\\Collection\\": "tests/"
+      "HowHoW\\": "src/"
     }
   },
   "require": {
-    "php": "^7.2"
-  },
-  "suggest": {
-    "ext-apcu": "*"
+    "php": "^7.4",
+    "react/event-loop":  "^1.1.0",
+    "react/promise": "^2.7",
+    "ext-ctype": "*",
+    "ext-iconv": "*",
+    "symfony/console": "5.0.*",
+    "symfony/dotenv": "5.0.*",
+    "symfony/flex": "^1.3.1",
+    "symfony/framework-bundle": "5.0.*",
+    "symfony/yaml": "5.0.*"
   },
   "require-dev": {
-    "phpunit/phpunit": "^8"
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "AOM\\Tests\\HowHow\\": "tests/"
+    }
+  },
+
+  "suggest": {
+    "ext-apcu": "*"
   },
   "config": {
     "preferred-install": {
