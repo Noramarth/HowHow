@@ -25,7 +25,6 @@ class Get extends Endpoint implements Service
      */
     public function handle(Request $request): ?SerializableResponse
     {
-        var_dump($this->mapToObject($request));
         return null;
     }
 }
