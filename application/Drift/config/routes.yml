@@ -1,0 +1,4 @@
+# Routes
+default:
+  path: /
+  controller: service.default

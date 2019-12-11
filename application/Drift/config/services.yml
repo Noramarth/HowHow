@@ -1,0 +1,25 @@
+parameters:
+    kernel.secret: yoursecretshouldbehere
+
+framework:
+    form: false
+    assets: false
+    session: false
+    translator: false
+    php_errors:
+        log: true
+
+# config/services.yaml
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    service.default:
+        class: App\Service\Main
+        tags:
+            - {name: controller.service_arguments}
+
+    App\Endpoint\:
+        resource: "%kernel.project_dir%/src/Endpoint"
