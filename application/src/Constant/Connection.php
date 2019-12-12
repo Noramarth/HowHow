@@ -6,5 +6,6 @@ namespace App\Constant;
 
 class Connection
 {
-    public const ENDPOINT_HEADER = 'ep';
+    public const METHOD_HEADER = 'method';
+    public const DOMAIN_HEADER = 'domain';
 }

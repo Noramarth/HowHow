@@ -15,8 +15,6 @@ abstract class Endpoint
 {
     protected string $entity;
 
-    private array $methods;
-
     private array $getters;
 
     private array $setters;
@@ -64,20 +62,6 @@ abstract class Endpoint
             $this->getters = $getters;
         }
         return $this->getters;
-    }
-
-    protected function mapToObject(Request $request): Entity
-    {
-        $entity = new $this->entity;
-        $body = json_decode($request->getContent());
-        foreach ($body as $property => $value) {
-            $setter = 'set' . ucfirst($property);
-            if (array_search($setter, $this->getSetters()) === false) {
-                throw new InvalidEntitySetter("{$setter} is not a real setter");
-            }
-            $entity->$setter($value);
-        }
-        return $entity;
     }
 
     private function getSetters()

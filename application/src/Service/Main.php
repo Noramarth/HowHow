@@ -15,34 +15,57 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Constant\Connection;
-use App\Interfaces\Service;
+use App\Exception\VisibilityBreach;
+use App\Interfaces\Endpoint;
+use App\Interfaces\Exception\Collectible;
+use App\lib\ErrorCollector;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use React\Promise\FulfilledPromise;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class Main.
- *
- * You can run this action by making `curl` to /
  */
 class Main
 {
+
+    private Endpoint $endpoint;
+
+    private LoggerInterface $logger;
+
+    public function __construct(Endpoint $endpoint, LoggerInterface $logger)
+    {
+        $this->endpoint = $endpoint;
+        $this->logger = $logger;
+    }
+
     /**
      * Default path.
      * @param Request $request
-     * @return FulfilledPromise
+     * @return FulfilledPromise|JsonResponse
+     * @throws VisibilityBreach
      */
     public function __invoke(Request $request)
     {
-        $endpoint = "App\\Endpoint\\" . ucfirst($request->headers->get(Connection::ENDPOINT_HEADER));
-        /** @var  Service $service */
-        $service = (new $endpoint);
-        if ($service->supports($request)) {
+        try {
             return new FulfilledPromise(
-                new JsonResponse($service->handle($request), 200)
+                new JsonResponse($this->endpoint->handle(), Response::HTTP_OK)
+            );
+        } catch (Collectible $exception) {
+            ErrorCollector::getInstance()->add($exception);
+            $this->logger->log(
+                LogLevel::ERROR,
+                var_export(
+                    ErrorCollector::getCollectedExceptions()
+                )
+            );
+            return new JsonResponse(
+                'Errors occurred, please check logs for more details',
+                Response::HTTP_I_AM_A_TEAPOT
             );
         }
-        return new JsonResponse('Endpoint not supported', 500);
     }
 }

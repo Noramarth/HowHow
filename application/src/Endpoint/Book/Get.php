@@ -6,24 +6,24 @@ namespace App\Endpoint\Book;
 
 use App\Abstracts\Connection\Endpoint;
 use App\Entity\Storage\Database\MySQL\Book;
-use App\Exception\InvalidEntitySetter;
+use App\Interfaces\Endpoint as EndpointInterface;
 use App\Interfaces\SerializableResponse;
-use App\Interfaces\Service;
 use Symfony\Component\HttpFoundation\Request;
 
-class Get extends Endpoint implements Service
+class Get extends Endpoint implements EndpointInterface
 {
-    public function __construct()
+    private Request $request;
+
+    public function __construct(Request $request)
     {
         $this->entity = Book::class;
+        $this->request = $request;
     }
 
     /**
-     * @param Request $request
      * @return SerializableResponse|null
-     * @throws InvalidEntitySetter
      */
-    public function handle(Request $request): ?SerializableResponse
+    public function handle(): ?SerializableResponse
     {
         return null;
     }

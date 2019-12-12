@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Drift;
 
+use App\lib\Traits\KernelConnections;
 use Drift\HttpKernel\AsyncKernel;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -22,6 +23,7 @@ use Symfony\Component\Config\Exception\LoaderLoadException;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\RouteCollectionBuilder;
+
 use function dirname;
 
 /**
@@ -30,6 +32,7 @@ use function dirname;
 class Kernel extends AsyncKernel
 {
     use MicroKernelTrait;
+    use KernelConnections;
 
     /**
      * @return iterable

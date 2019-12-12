@@ -21,5 +21,10 @@ services:
         tags:
             - {name: controller.service_arguments}
 
-    App\Endpoint\:
-        resource: "%kernel.project_dir%/src/Endpoint"
+    App\Interfaces\Endpoint:
+        autowire: true
+        factory: ['App\Factory\Endpoint', 'get']
+
+    App\EventListener\Exception:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
