@@ -15,11 +15,11 @@ declare(strict_types=1);
 
 use Symfony\Component\Dotenv\Dotenv;
 
-$appDir = dirname(__FILE__).'/../..';
-require $appDir.'/vendor/autoload.php';
+$appDir = dirname(__FILE__) . '/../..';
+require $appDir . '/vendor/autoload.php';
 
-if (is_file($appDir.'/.env')) {
-    (new Dotenv())->loadEnv($appDir.'/.env');
+if (is_file($appDir . '/.env')) {
+    (new Dotenv())->loadEnv($appDir . '/.env');
 }
 
 $_SERVER += $_ENV;

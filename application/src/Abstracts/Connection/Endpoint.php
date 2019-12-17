@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Abstracts\Connection;
 
-use App\Exception\InvalidEntitySetter;
 use App\Exception\InvalidPropertyProvided;
-use App\Interfaces\Entity;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,8 +18,6 @@ abstract class Endpoint
     private array $setters;
 
     /**
-     * @param Request $request
-     * @return bool
      * @throws InvalidPropertyProvided
      * @throws ReflectionException
      */
@@ -29,7 +25,7 @@ abstract class Endpoint
     {
         $body = json_decode($request->getContent());
         foreach ($body as $property => $value) {
-            if (array_search($property, $this->getAllEntityProperties()) === false) {
+            if (false === array_search($property, $this->getAllEntityProperties())) {
                 throw new InvalidPropertyProvided("{$this->entity} does not contain {$property}");
             }
             $valueType = 'integer' === gettype($value) ? 'int' : gettype($value);
@@ -38,6 +34,7 @@ abstract class Endpoint
                 return false;
             }
         }
+
         return true;
     }
 
@@ -49,6 +46,7 @@ abstract class Endpoint
             return lcfirst(str_replace('get', '', $getter));
         }, $this->getGetters());
         $properties = array_merge($publicProperties, $getterProperties);
+
         return array_unique($properties);
     }
 
@@ -57,10 +55,11 @@ abstract class Endpoint
         if (empty($this->getters)) {
             $methods = get_class_methods($this->entity);
             $getters = array_filter($methods, static function ($method) {
-                return strstr($method, 'get') !== false;
+                return false !== strstr($method, 'get');
             });
             $this->getters = $getters;
         }
+
         return $this->getters;
     }
 
@@ -69,10 +68,11 @@ abstract class Endpoint
         if (empty($this->setters)) {
             $methods = get_class_methods($this->entity);
             $setters = array_filter($methods, static function ($method) {
-                return strstr($method, 'set') !== false;
+                return false !== strstr($method, 'set');
             });
             $this->setters = $setters;
         }
+
         return $this->setters;
     }
 }

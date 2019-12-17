@@ -5,54 +5,81 @@ declare(strict_types=1);
 namespace App\Entity\Storage\Database\MySQL;
 
 use App\Interfaces\StorageEntity;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Class Book.
+ *
+ * @ORM\Entity()
+ */
 class Book implements StorageEntity
 {
-    private int $id;
-    private string $title;
-    /** @var Chapter[]|array */
-    private array $chapters = [];
-    private bool $hasChapters = false;
-    private string $body = '';
+    /**
+     * @ORM\Column(type="bigint")
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     */
+    public int $bookId;
 
     /**
-     * @return int
+     * @ORM\Column(type="string", nullable=false)
      */
-    public function getId(): int
+    public string $title;
+
+    /**
+     * @ORM\OneToMany(
+     *     targetEntity="Chapter",
+     *     mappedBy="chapterId",
+     *     cascade={
+     *          "persist",
+     *          "remove",
+     *          "merge"
+     *      },
+     *     orphanRemoval=true
+     * )
+     *
+     * @var Chapter[]|ArrayCollection
+     */
+    public ?ArrayCollection $chapters;
+
+    public bool $hasChapters = false;
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    public ?string $body;
+
+    public function __construct()
     {
-        return $this->id;
+        $this->chapters = new ArrayCollection();
     }
 
-    /**
-     * @param int $id
-     * @return Book
-     */
-    public function setId(int $id): Book
+    public function getBookId(): int
     {
-        $this->id = $id;
+        return $this->bookId;
+    }
+
+    public function setBookId(int $bookId): Book
+    {
+        $this->bookId = $bookId;
+
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getTitle(): string
     {
         return $this->title;
     }
 
-    /**
-     * @param string $title
-     * @return Book
-     */
     public function setTitle(string $title): Book
     {
         $this->title = $title;
+
         return $this;
     }
 
     /**
-     * @return Chapter[]|array
+     * @return Chapter[]|ArrayCollection
      */
     public function getChapters()
     {
@@ -60,77 +87,54 @@ class Book implements StorageEntity
     }
 
     /**
-     * @param Chapter[]|array $chapters
-     * @return Book
+     * @param Chapter[]|ArrayCollection $chapters
      */
-    public function setChapters(array $chapters): Book
+    public function setChapters($chapters): Book
     {
-        foreach ($chapters as $chapter) {
-            $this->addChapter($chapter);
-        }
+        $this->chapters = $chapters;
+
         return $this;
     }
 
-    /**
-     * @param array $chapters
-     * @return Book
-     */
-    public function removeChapters(array $chapters): Book
-    {
-        foreach ($chapters as $chapter) {
-            $this->removeChapter($chapter);
-        }
-        return $this;
-    }
-
-    /**
-     * @param Chapter $chapter
-     * @return Book
-     */
     public function addChapter(Chapter $chapter): Book
     {
-        if (!array_key_exists($chapter->getTitle(), $this->chapters)) {
-            $this->chapters[] = $chapter;
+        if (!$this->chapters->contains($chapter)) {
+            $this->chapters->add($chapter);
         }
+
         return $this;
     }
 
-    /**
-     * @param Chapter $chapter
-     * @return Book
-     */
     public function removeChapter(Chapter $chapter): Book
     {
-        if (array_key_exists($chapter->getTitle(), $this->chapters)) {
-            unset($this->chapters[$chapter->getTitle()]);
+        if ($this->chapters->contains($chapter)) {
+            $this->chapters->removeElement($chapter);
         }
+
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function hasChapters(): bool
     {
         return $this->hasChapters;
     }
 
-    /**
-     * @return string
-     */
-    public function getBody(): string
+    public function setHasChapters(bool $hasChapters): Book
+    {
+        $this->hasChapters = $hasChapters;
+
+        return $this;
+    }
+
+    public function getBody(): ?string
     {
         return $this->body;
     }
 
-    /**
-     * @param string $body
-     * @return Book
-     */
-    public function setBody(string $body): Book
+    public function setBody(?string $body): Book
     {
         $this->body = $body;
+
         return $this;
     }
-
 }

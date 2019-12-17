@@ -31,7 +31,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class Main
 {
-
     private Endpoint $endpoint;
 
     private LoggerInterface $logger;
@@ -44,8 +43,9 @@ class Main
 
     /**
      * Default path.
-     * @param Request $request
+     *
      * @return FulfilledPromise|JsonResponse
+     *
      * @throws VisibilityBreach
      */
     public function __invoke(Request $request)
@@ -62,6 +62,7 @@ class Main
                     ErrorCollector::getCollectedExceptions()
                 )
             );
+
             return new JsonResponse(
                 'Errors occurred, please check logs for more details',
                 Response::HTTP_I_AM_A_TEAPOT

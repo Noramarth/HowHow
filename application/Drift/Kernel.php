@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Drift;
 
 use App\lib\Traits\KernelConnections;
+use function dirname;
 use Drift\HttpKernel\AsyncKernel;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -23,8 +24,6 @@ use Symfony\Component\Config\Exception\LoaderLoadException;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\RouteCollectionBuilder;
-
-use function dirname;
 
 /**
  * Class Kernel.
@@ -34,9 +33,6 @@ class Kernel extends AsyncKernel
     use MicroKernelTrait;
     use KernelConnections;
 
-    /**
-     * @return iterable
-     */
     public function registerBundles(): iterable
     {
         $contents = require $this->getApplicationLayerDir() . '/config/bundles.php';
@@ -47,26 +43,17 @@ class Kernel extends AsyncKernel
         }
     }
 
-    /**
-     * @return string
-     */
     private function getApplicationLayerDir(): string
     {
         return $this->getProjectDir() . '/Drift';
     }
 
-    /**
-     * @return string
-     */
     public function getProjectDir(): string
     {
         return dirname(__DIR__);
     }
 
     /**
-     * @param ContainerBuilder $container
-     * @param LoaderInterface $loader
-     *
      * @throws Exception
      */
     protected function configureContainer(
@@ -79,8 +66,6 @@ class Kernel extends AsyncKernel
     }
 
     /**
-     * @param RouteCollectionBuilder $routes
-     *
      * @throws LoaderLoadException
      */
     protected function configureRoutes(RouteCollectionBuilder $routes): void

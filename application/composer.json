@@ -18,7 +18,8 @@
     "doctrine/orm": "^2.7.0",
     "doctrine/doctrine-bundle": "^2.0.0",
     "doctrine/doctrine-migrations-bundle": "^2.1.0",
-    "symfony/expression-language": "^5.0.0"
+    "symfony/expression-language": "^5.0.0",
+    "symfony/validator": "^5.0.0"
   },
 
   "autoload": {

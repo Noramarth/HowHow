@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Factory;
 
 use App\Constant\Connection;
@@ -20,7 +19,7 @@ class Endpoint
         $endpointClass = self::ENDPOINT_BASE_NAMESPACE;
         $endpointClass .= self::NAMESPACE_DIVIDER . ucfirst($request->headers->get(Connection::DOMAIN_HEADER));
         $endpointClass .= self::NAMESPACE_DIVIDER . ucfirst($request->headers->get(Connection::METHOD_HEADER));
-        /** @var  EndpointInterface $service */
+        /* @var  EndpointInterface $service */
         try {
             return new $endpointClass($request);
         } catch (Throwable $exception) {

@@ -9,5 +9,6 @@ use Symfony\Component\HttpFoundation\Request;
 interface Service
 {
     public function supports(Request $request): bool;
+
     public function handle(Request $request): ?SerializableResponse;
 }

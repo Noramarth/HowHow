@@ -1,20 +1,32 @@
 <?php
 
-
 namespace App\Entity\Storage\Database\MySQL;
 
+use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Class Chapter
+ * @package App\Entity\Storage\Database\MySQL
+ * @ORM\Entity()
+ */
 class Chapter
 {
-    private int $chapterId;
-    private int $bookId;
-    private string $title;
-    private string $body;
-
     /**
-     * @return int
+     * @ORM\Column(type="string")
+     * @ORM\Id()
+     * @ORM\GeneratedValue(strategy="UUID")
      */
-    public function getChapterId(): int
+    public string $chapterId;
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    public ?string $title;
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    public ?string $body;
+
+    public function getChapterId(): string
     {
         return $this->chapterId;
     }
@@ -30,54 +42,36 @@ class Chapter
     }
 
     /**
-     * @return int
+     * @return string|null
      */
-    public function getBookId(): int
-    {
-        return $this->bookId;
-    }
-
-    /**
-     * @param int $bookId
-     * @return Chapter
-     */
-    public function setBookId(int $bookId): Chapter
-    {
-        $this->bookId = $bookId;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTitle(): string
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
     /**
-     * @param string $title
+     * @param string|null $title
      * @return Chapter
      */
-    public function setTitle(string $title): Chapter
+    public function setTitle(?string $title): Chapter
     {
         $this->title = $title;
         return $this;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getBody(): string
+    public function getBody(): ?string
     {
         return $this->body;
     }
 
     /**
-     * @param string $body
+     * @param string|null $body
      * @return Chapter
      */
-    public function setBody(string $body): Chapter
+    public function setBody(?string $body): Chapter
     {
         $this->body = $body;
         return $this;

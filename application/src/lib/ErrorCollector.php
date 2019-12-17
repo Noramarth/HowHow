@@ -14,7 +14,7 @@ class ErrorCollector
     private const ALLOWED_CALLERS = [
         Main::class,
         self::class,
-        Exception::class
+        Exception::class,
     ];
     private static ?ErrorCollector $instance = null;
     private array $exceptions = [];
@@ -34,6 +34,7 @@ class ErrorCollector
                 'line' => $exception->getLine(),
             ];
         }
+
         return $collection;
     }
 
@@ -41,6 +42,7 @@ class ErrorCollector
     {
         $exceptions = $this->exceptions;
         $this->reset();
+
         return $exceptions;
     }
 
@@ -52,11 +54,11 @@ class ErrorCollector
 
     public static function getInstance(): self
     {
-        if (array_search(self::getCallingClass(), self::ALLOWED_CALLERS) === false) {
+        if (false === array_search(self::getCallingClass(), self::ALLOWED_CALLERS)) {
             throw new VisibilityBreach();
         }
 
-        if (self::$instance === null) {
+        if (null === self::$instance) {
             self::$instance = new ErrorCollector();
         }
 
@@ -67,7 +69,7 @@ class ErrorCollector
     {
         $trace = debug_backtrace();
         $class = $trace[1]['class'];
-        for ($i = 1; $i < count($trace); $i++) {
+        for ($i = 1; $i < count($trace); ++$i) {
             if (isset($trace[$i])) {
                 if ($class != $trace[$i]['class']) {
                     return $trace[$i]['class'];

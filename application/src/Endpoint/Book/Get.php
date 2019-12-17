@@ -20,9 +20,6 @@ class Get extends Endpoint implements EndpointInterface
         $this->request = $request;
     }
 
-    /**
-     * @return SerializableResponse|null
-     */
     public function handle(): ?SerializableResponse
     {
         return null;

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Exception;
-
 
 use App\Interfaces\Exception\Breaking;
 use Exception;

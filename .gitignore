@@ -2,7 +2,8 @@
 !/application/var/cache/.gitkeep
 !/application/var/logs/.gitkeep
 /application/vendor/
-
+/application/.php_cs.cache
+/application/.env
 /application/phpunit.xml
 
 /build/

@@ -10,9 +10,9 @@ use Throwable;
 
 class EndpointNotFound extends Exception implements Breaking
 {
-    public function __construct($message = "", $code = 0, Throwable $previous = null)
+    public function __construct($message = '', $code = 0, Throwable $previous = null)
     {
-        $code = $code === 0 ? 300 : $code;
+        $code = 0 === $code ? 300 : $code;
         parent::__construct($message, $code, $previous);
     }
 }

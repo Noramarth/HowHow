@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\EventListener;
 
 use App\Interfaces\Exception\Breaking;
-use App\Interfaces\Exception\Collectible;
 use App\lib\ErrorCollector;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -35,10 +34,10 @@ class Exception
                                 'message' => $exception->getMessage(),
                                 'file' => $exception->getFile(),
                                 'line' => $exception->getLine(),
-                                'trace' => $exception->getTraceAsString()
+                                'trace' => $exception->getTraceAsString(),
                             ],
-                            'previous' => ErrorCollector::getCollectedExceptions()
-                        ]
+                            'previous' => ErrorCollector::getCollectedExceptions(),
+                        ],
                     ]
                 )
             );
@@ -52,6 +51,4 @@ class Exception
             );
         }
     }
-
-
 }

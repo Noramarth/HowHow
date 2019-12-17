@@ -6,5 +6,4 @@ namespace App\lib\Traits;
 
 trait KernelConnections
 {
-
 }
