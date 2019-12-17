@@ -5,8 +5,8 @@ namespace App\Entity\Storage\Database\MySQL;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Chapter
- * @package App\Entity\Storage\Database\MySQL
+ * Class Chapter.
+ *
  * @ORM\Entity()
  */
 class Chapter
@@ -31,49 +31,34 @@ class Chapter
         return $this->chapterId;
     }
 
-    /**
-     * @param int $chapterId
-     * @return Chapter
-     */
     public function setChapterId(int $chapterId): Chapter
     {
         $this->chapterId = $chapterId;
+
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    /**
-     * @param string|null $title
-     * @return Chapter
-     */
     public function setTitle(?string $title): Chapter
     {
         $this->title = $title;
+
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getBody(): ?string
     {
         return $this->body;
     }
 
-    /**
-     * @param string|null $body
-     * @return Chapter
-     */
     public function setBody(?string $body): Chapter
     {
         $this->body = $body;
+
         return $this;
     }
 }
