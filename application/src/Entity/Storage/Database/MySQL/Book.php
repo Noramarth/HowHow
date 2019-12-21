@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Entity\Storage\Database\MySQL;
 
-use App\Interfaces\StorageEntity;
+use App\lib\Interfaces\StorageEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 
 /**
  * Class Book.
@@ -39,11 +40,10 @@ class Book implements StorageEntity
      *     orphanRemoval=true
      * )
      *
-     * @var Chapter[]|ArrayCollection
+     * @var Chapter[]|ArrayCollection|null
      */
-    public ?ArrayCollection $chapters;
+    public $chapters;
 
-    public bool $hasChapters = false;
     /**
      * @ORM\Column(type="text", nullable=true)
      */
@@ -88,6 +88,7 @@ class Book implements StorageEntity
 
     /**
      * @param Chapter[]|ArrayCollection $chapters
+     * @return Book
      */
     public function setChapters($chapters): Book
     {
@@ -116,14 +117,7 @@ class Book implements StorageEntity
 
     public function hasChapters(): bool
     {
-        return $this->hasChapters;
-    }
-
-    public function setHasChapters(bool $hasChapters): Book
-    {
-        $this->hasChapters = $hasChapters;
-
-        return $this;
+        return $this->chapters === null;
     }
 
     public function getBody(): ?string

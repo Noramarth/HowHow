@@ -15,9 +15,11 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Exception\BadHeaders;
+use App\Exception\EndpointNotFound;
 use App\Exception\VisibilityBreach;
-use App\Interfaces\Endpoint;
-use App\Interfaces\Exception\Collectible;
+use App\lib\Interfaces\Endpoint;
+use App\lib\Interfaces\Exception\Collectible;
 use App\lib\ErrorCollector;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -31,11 +33,11 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class Main
 {
-    private Endpoint $endpoint;
+    private EndpointManager $endpoint;
 
     private LoggerInterface $logger;
 
-    public function __construct(Endpoint $endpoint, LoggerInterface $logger)
+    public function __construct(EndpointManager $endpoint, LoggerInterface $logger)
     {
         $this->endpoint = $endpoint;
         $this->logger = $logger;
@@ -44,15 +46,18 @@ class Main
     /**
      * Default path.
      *
+     * @param Request $request
      * @return FulfilledPromise|JsonResponse
      *
      * @throws VisibilityBreach
+     * @throws BadHeaders
+     * @throws EndpointNotFound
      */
     public function __invoke(Request $request)
     {
         try {
             return new FulfilledPromise(
-                new JsonResponse($this->endpoint->handle(), Response::HTTP_OK)
+                new JsonResponse($this->endpoint->get()->handle(), Response::HTTP_OK)
             );
         } catch (Collectible $exception) {
             ErrorCollector::getInstance()->add($exception);
@@ -62,7 +67,6 @@ class Main
                     ErrorCollector::getCollectedExceptions()
                 )
             );
-
             return new JsonResponse(
                 'Errors occurred, please check logs for more details',
                 Response::HTTP_I_AM_A_TEAPOT

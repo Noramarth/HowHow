@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\EventListener;
 
-use App\Interfaces\Exception\Breaking;
+use App\lib\Interfaces\Exception\Breaking;
 use App\lib\ErrorCollector;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -20,10 +20,9 @@ class Exception
         $this->logger = $logger;
     }
 
-    public function onKernelException(ExceptionEvent $event)
+    public function onKernelException(?ExceptionEvent $event)
     {
         $exception = $event->getThrowable();
-
         if ($exception instanceof Breaking) {
             $this->logger->log(
                 LogLevel::ERROR,

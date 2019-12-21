@@ -6,7 +6,7 @@ namespace App\lib;
 
 use App\EventListener\Exception;
 use App\Exception\VisibilityBreach;
-use App\Interfaces\Exception\Collectible;
+use App\lib\Interfaces\Exception\Collectible;
 use App\Service\Main;
 
 class ErrorCollector
@@ -23,6 +23,9 @@ class ErrorCollector
     {
     }
 
+    /**
+     * @throws VisibilityBreach
+     */
     public static function getCollectedExceptions(): array
     {
         $collection = [];
@@ -52,6 +55,9 @@ class ErrorCollector
         self::$instance = null;
     }
 
+    /**
+     * @throws VisibilityBreach
+     */
     public static function getInstance(): self
     {
         if (false === array_search(self::getCallingClass(), self::ALLOWED_CALLERS)) {
