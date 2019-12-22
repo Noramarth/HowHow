@@ -16,3 +16,10 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Entity/Storage/Database/MySQL'
                 prefix: 'App\Entity'
                 alias: App
+        query_cache_driver:
+            type: pool
+        metadata_cache_driver:
+            type: pool
+        result_cache_driver:
+            type: pool
+
