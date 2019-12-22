@@ -1,6 +1,6 @@
 <?php
 
-use App\Kernel;
+use Drift\Kernel;
 use Symfony\Component\ErrorHandler\Debug;
 use Symfony\Component\HttpFoundation\Request;
 

@@ -1,0 +1,45 @@
+
+parameters:
+    kernel.secret: '%env(resolve:APP_SECRET)%'
+    kernel.root_dir: kernel.project_dir
+
+imports:
+    - { resource: packages/*.yml }
+    - { resource: packages/*.yaml }
+
+# config/services.yaml
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: true
+
+    service.default:
+        class: App\Service\Main
+        tags:
+            - {name: controller.service_arguments}
+
+    App\Service\:
+        resource: '../../src/Service'
+
+    App\DataManager\:
+        resource: '../../src/DataManager'
+
+    App\Endpoint\:
+        resource: '../../src/Endpoint'
+
+    App\DataFixtures\:
+        resource: '../../src/DataFixtures'
+        tags: ['doctrine.fixture.orm']
+
+    App\Service\EndpointManager:
+        arguments:
+            - !tagged_iterator application.endpoint
+
+    _instanceof:
+        App\lib\Interfaces\Endpoint:
+            tags: ['application.endpoint']
+
+    App\EventListener\Exception:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
