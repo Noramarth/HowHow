@@ -19,7 +19,7 @@ class MethodTools
             }
             if (is_array($argument)) {
                 if (!empty($argument)) {
-                    $values[] = implode(Common::CACHE_DELIMITER, $argument);
+                    $values[] = 'Collection_' . hash('sha256', json_encode($argument));
                 }
                 continue;
             }

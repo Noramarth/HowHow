@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\lib\Abstracts;
+namespace App\Service\Response;
 
 use App\lib\ClassTools;
 use App\lib\DoctrineRedisCache;
@@ -12,42 +12,70 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use stdClass;
 
-abstract class Mapper
+class Mapper
 {
     public bool $empty = false;
     public bool $multiple = false;
-
-    /**
-     * @var mixed
-     */
-    public $data;
 
     private array $parents = [];
 
     private RedisCache $cache;
 
-    public function __construct(array $items, ?int $depth = null, ?RedisCache $cache = null)
+    private bool $forceCache;
+
+    private bool $useCache;
+
+    public function __construct()
     {
-        $this->cache = $cache;
-        $depth = $depth ?? 1;
-        $this->data = new stdClass();
-        if (count($items) > 1) {
-            $this->multiple = true;
-            $this->makeMultipleItemResponse($items, $depth);
-            return;
+        $this->cache = DoctrineRedisCache::getCache();
+    }
+
+    public function map(array $items, ?int $depth = null, bool $useCache = true, bool $forceCache = false)
+    {
+        $this->useCache = $useCache;
+        $this->forceCache = $forceCache;
+        if ($useCache) {
+            $cacheKey = DoctrineRedisCache::getCacheKey($this, __METHOD__, func_get_args());
+            if ($forceCache) {
+                $result = $this->runAllNoCache($items, $depth);
+                $this->cache->save($cacheKey, $result, DoctrineRedisCache::CACHE_EXPIRATION_TIME);
+                return $result;
+            }
+            $result = $this->cache->fetch($cacheKey);
+            if ($result !== false) {
+                return $result;
+            }
+            $result = $this->runAllNoCache($items, $depth);
+            $this->cache->save($cacheKey, $result, DoctrineRedisCache::CACHE_EXPIRATION_TIME);
+            return $result;
         }
-        $response = $this->singleItemResponse(array_shift($items), $depth);
-        $this->data = $response;
+        return $this->runAllNoCache($items, $depth);
+    }
+
+    private function runAllNoCache(array $items, ?int $depth = null)
+    {
+        $response = new stdClass();
+        $depth = $depth ?? 1;
+        $itemCount = count($items);
+        if ($itemCount > 1) {
+            $this->multiple = true;
+            $response = $this->makeMultipleItemResponse($items, $depth);
+        }
+        if ($itemCount === 1) {
+            $response = $this->singleItemResponse(array_shift($items), $depth);
+        }
+        return $response;
     }
 
     private function makeMultipleItemResponse(array $items, int $depth)
     {
-        $this->data = [];
+        $data = [];
         foreach ($items as $item) {
             $this->parents = [];
             $responseItem = $this->singleItemResponse($item, $depth);
-            $this->data[] = $responseItem;
+            $data[] = $responseItem;
         }
+        return $data;
     }
 
     private function singleItemResponse(
@@ -56,17 +84,30 @@ abstract class Mapper
         ?int $currentDepth = 0
     ): stdClass
     {
-        if ($this->cache !== null) {
+        if ($this->useCache) {
             $cacheKey = DoctrineRedisCache::getCacheKey($item, __METHOD__, func_get_args());
+            if ($this->forceCache) {
+                return $this->getFreshlyCachedResult($item, $maxDepth, $cacheKey, $currentDepth);
+            }
             $cachedResult = $this->cache->fetch($cacheKey);
             if ($cachedResult !== false) {
                 return $cachedResult;
             }
-            $result = $this->makeSingleItemResponse($item, $maxDepth, $currentDepth);
-            $this->cache->save($cacheKey, $result, DoctrineRedisCache::CACHE_EXPIRATION_TIME);
-            return $result;
+            return $this->getFreshlyCachedResult($item, $maxDepth, $cacheKey, $currentDepth);
         }
         return $this->makeSingleItemResponse($item, $maxDepth, $currentDepth);
+    }
+
+    private function getFreshlyCachedResult(
+        $item,
+        int $maxDepth,
+        string $cacheKey,
+        ?int $currentDepth = 0
+    ): stdClass
+    {
+        $result = $this->makeSingleItemResponse($item, $maxDepth, $currentDepth);
+        $this->cache->save($cacheKey, $result, DoctrineRedisCache::CACHE_EXPIRATION_TIME);
+        return $result;
     }
 
     private function makeSingleItemResponse(
