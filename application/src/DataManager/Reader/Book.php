@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\DataManager\Reader;
 
 use App\Entity\Storage\Database\MySQL\Book as BookEntity;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\lib\Extension\Reader;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
-class Book extends ServiceEntityRepository
+class Book extends Reader
 {
     private const ENTITY = BookEntity::class;
 
@@ -16,4 +16,5 @@ class Book extends ServiceEntityRepository
     {
         parent::__construct($registry, self::ENTITY);
     }
+
 }

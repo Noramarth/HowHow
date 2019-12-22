@@ -14,4 +14,14 @@ class ClassTools
     {
         return array_pop(explode('\\', get_class($class)));
     }
+
+    /**
+     * @param string $FullyQualifiedMethodName
+     * @return string
+     */
+    public static function getBaseMethodName(string $FullyQualifiedMethodName): string
+    {
+        $staticMethod = array_pop(explode('\\', $FullyQualifiedMethodName));
+        return substr(strstr($staticMethod, '::', false), 2);
+    }
 }
