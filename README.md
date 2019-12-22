@@ -1,4 +1,4 @@
-Latest load test data using doctrine and 3 levels of joins  plus cache
+Latest load test data using doctrine and 2 levels of joins  plus cache
 
 <pre>k6 run --vus 1000 --duration 1m tests/load/http.js
 
