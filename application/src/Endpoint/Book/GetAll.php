@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace App\Endpoint\Book;
 
+use App\DataManager\Reader\Book as Reader;
 use App\Exception\UnexpectedPayloadForEndpoint;
 use App\lib\Abstracts\Connection\Endpoint;
-use App\DataManager\Reader\Book as Reader;
 use App\lib\DoctrineRedisCache;
 use App\lib\Interfaces\Endpoint as EndpointInterface;
-use App\lib\Interfaces\SerializableResponse;
-use App\Entity\Mapper;
+use App\Service\Response\Mapper\Book;
 use Doctrine\Common\Cache\RedisCache;
+use stdClass;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Throwable;
 
 class GetAll extends Endpoint implements EndpointInterface
 {
@@ -25,15 +24,17 @@ class GetAll extends Endpoint implements EndpointInterface
     private RequestStack $request;
     private Reader $reader;
     private RedisCache $cache;
+    private Book $mapper;
 
-    public function __construct(RequestStack $requestStack, Reader $reader)
+    public function __construct(RequestStack $requestStack, Reader $reader, Book $mapper)
     {
         $this->request = $requestStack;
         $this->reader = $reader;
         $this->cache = DoctrineRedisCache::getCache();
+        $this->mapper = $mapper;
     }
 
-    public function handle(): ?SerializableResponse
+    public function handle()
     {
         $request = $this->request->getCurrentRequest();
         $payload = json_decode($request->getContent());
@@ -42,7 +43,7 @@ class GetAll extends Endpoint implements EndpointInterface
             throw new UnexpectedPayloadForEndpoint();
         }
 
-        return new Mapper\Book($this->reader->findAll(), $depth, $this->cache);
+        return $this->mapper->map($this->reader->findAll(), $depth);
 
     }
 }
