@@ -6,22 +6,24 @@ namespace App\Entity\Storage\Database\MySQL;
 
 use App\lib\Interfaces\StorageEntity;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\PersistentCollection;
 
 /**
  * Class Book.
  *
- * @ORM\Entity()
+ * @ORM\Entity(
+ *     repositoryClass="App\DataManager\Reader\Book"
+ * )
  */
 class Book implements StorageEntity
 {
     /**
      * @ORM\Column(type="bigint")
      * @ORM\Id()
-     * @ORM\GeneratedValue()
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
-    public int $bookId;
+    public int $id;
 
     /**
      * @ORM\Column(type="string", nullable=false)
@@ -29,20 +31,10 @@ class Book implements StorageEntity
     public string $title;
 
     /**
-     * @ORM\OneToMany(
-     *     targetEntity="Chapter",
-     *     mappedBy="chapterId",
-     *     cascade={
-     *          "persist",
-     *          "remove",
-     *          "merge"
-     *      },
-     *     orphanRemoval=true
-     * )
-     *
-     * @var Chapter[]|ArrayCollection|null
+     * @ORM\OneToMany(targetEntity="Chapter", mappedBy="book", orphanRemoval=true)
+     * @var Chapter[]|Collection
      */
-    public $chapters;
+    public Collection $chapters;
 
     /**
      * @ORM\Column(type="text", nullable=true)
@@ -54,14 +46,14 @@ class Book implements StorageEntity
         $this->chapters = new ArrayCollection();
     }
 
-    public function getBookId(): int
+    public function getId(): ?int
     {
-        return $this->bookId;
+        return $this->id;
     }
 
-    public function setBookId(int $bookId): Book
+    public function setId(int $id): Book
     {
-        $this->bookId = $bookId;
+        $this->id = $id;
 
         return $this;
     }
@@ -79,30 +71,19 @@ class Book implements StorageEntity
     }
 
     /**
-     * @return Chapter[]|ArrayCollection
+     * @return Chapter[]|Collection
      */
-    public function getChapters()
+    public function getChapters(): Collection
     {
         return $this->chapters;
-    }
-
-    /**
-     * @param Chapter[]|ArrayCollection $chapters
-     * @return Book
-     */
-    public function setChapters($chapters): Book
-    {
-        $this->chapters = $chapters;
-
-        return $this;
     }
 
     public function addChapter(Chapter $chapter): Book
     {
         if (!$this->chapters->contains($chapter)) {
             $this->chapters->add($chapter);
+            $chapter->setBook($this);
         }
-
         return $this;
     }
 
@@ -110,6 +91,7 @@ class Book implements StorageEntity
     {
         if ($this->chapters->contains($chapter)) {
             $this->chapters->removeElement($chapter);
+            $chapter->setBook(null);
         }
 
         return $this;
@@ -117,7 +99,7 @@ class Book implements StorageEntity
 
     public function hasChapters(): bool
     {
-        return $this->chapters === null;
+        return $this->getChapters() === null;
     }
 
     public function getBody(): ?string

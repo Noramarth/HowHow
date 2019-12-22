@@ -31,10 +31,11 @@ class GetAll extends Endpoint implements EndpointInterface
     {
         $request = $this->request->getCurrentRequest();
         $payload = json_decode($request->getContent());
-        if ($payload !== null) {
+        $depth = isset($payload->depth) ? $payload->depth : null;
+        if ($payload !== null && $depth === null) {
             throw new UnexpectedPayloadForEndpoint();
         }
         $data = $this->reader->findAll();
-        return new Mapper\Book($data);
+        return new Mapper\Book($data, $depth);
     }
 }
