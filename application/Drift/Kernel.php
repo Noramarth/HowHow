@@ -15,6 +15,7 @@ declare(strict_types=1);
 
 namespace Drift;
 
+use function dirname;
 use Drift\HttpKernel\AsyncKernel;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -22,8 +23,6 @@ use Symfony\Component\Config\Exception\LoaderLoadException;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Routing\RouteCollectionBuilder;
-
-use function dirname;
 
 /**
  * Class Kernel.
@@ -58,8 +57,7 @@ class Kernel extends AsyncKernel
     protected function configureContainer(
         ContainerBuilder $container,
         LoaderInterface $loader
-    ): void
-    {
+    ): void {
         $confDir = $this->getApplicationLayerDir() . '/config';
         $container->setParameter('container.dumper.inline_class_loader', \PHP_VERSION_ID < 70400 || $this->debug);
         $container->setParameter('container.dumper.inline_factories', true);

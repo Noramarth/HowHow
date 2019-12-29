@@ -17,9 +17,9 @@ doctrine:
                 prefix: 'App\Entity'
                 alias: App
         query_cache_driver:
-            type: pool
+            pool: cache.redis
         metadata_cache_driver:
-            type: pool
+            pool: cache.redis
         result_cache_driver:
-            type: pool
+            pool: cache.redis
 

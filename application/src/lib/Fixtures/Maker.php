@@ -16,11 +16,8 @@ use ReflectionException;
 class Maker
 {
     /**
-     * @param int $numberOfItems
-     * @param string $entity
-     * @param ObjectManager $manager
-     * @param string|null $parent
      * @return ArrayCollection|null
+     *
      * @throws ReflectionException
      */
     public static function make(
@@ -28,8 +25,7 @@ class Maker
         string $entity,
         ObjectManager $manager,
         string $parent = null
-    ): ArrayCollection
-    {
+    ): ArrayCollection {
         $faker = Faker\Factory::create();
         $faker->addProvider(new Faker\Provider\Lorem($faker));
         $reflectionClass = new ReflectionClass($entity);
@@ -38,14 +34,14 @@ class Maker
         foreach ($properties as $property) {
             $isObject = false;
             $name = $property->getName();
-            if ($name === 'id') {
+            if ('id' === $name) {
                 continue;
             }
-            $type = (string)$property->getType();
+            $type = (string) $property->getType();
             if ($type === $parent) {
                 continue;
             }
-            if ($type === Collection::class) {
+            if (Collection::class === $type) {
                 $isObject = true;
                 $type = ORMClassTools::getClassType($property->getDocComment(), $entity);
             }
@@ -53,11 +49,11 @@ class Maker
             $propertyTypes[$name]['isObject'] = $isObject;
         }
         $items = new ArrayCollection();
-        for ($i = 0; $i < $numberOfItems; $i++) {
+        for ($i = 0; $i < $numberOfItems; ++$i) {
             $item = new $entity();
             foreach ($propertyTypes as $property => $details) {
                 if ($details['isObject']) {
-                    if (RandomGenerator::generateBool() === false) {
+                    if (false === RandomGenerator::generateBool()) {
                         continue;
                     }
                     $values = self::make(
@@ -79,13 +75,13 @@ class Maker
             $manager->flush();
             $items->add($item);
         }
+
         return $items;
     }
 
-
     private static function getFakerType(string $property, string $type): string
     {
-        if ($type === 'string') {
+        if ('string' === $type) {
             return self::getStringFakerVerb($property);
         }
     }
@@ -95,21 +91,27 @@ class Maker
         switch ($property) {
             case 'title':
                 $result = 'catchPhrase';
+
                 break;
             case 'body':
                 $result = 'text';
+
                 break;
             case 'address':
                 $result = 'streetAddress';
+
                 break;
             case 'firstName':
                 $result = 'firstName';
+
                 break;
             case 'lastName':
                 $result = 'lastName';
+
                 break;
             case 'phone':
                 $result = 'e164PhoneNumber';
+
                 break;
             default:
                 $result = 'word';

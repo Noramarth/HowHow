@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace App\Endpoint\Book;
 
+use App\DataManager\Reader\Book as Reader;
+use App\Entity\Mapper;
 use App\Exception\UnexpectedPayloadForEndpoint;
 use App\lib\Abstracts\Connection\Endpoint;
-use App\DataManager\Reader\Book as Reader;
 use App\lib\Interfaces\Endpoint as EndpointInterface;
 use App\lib\Interfaces\SerializableResponse;
-use App\Entity\Mapper;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class GetById extends Endpoint implements EndpointInterface
 {
-
     protected const DOMAIN = 'book';
     protected const METHOD = 'getById';
 
@@ -31,13 +30,14 @@ class GetById extends Endpoint implements EndpointInterface
     {
         $request = $this->request->getCurrentRequest();
         $payload = json_decode($request->getContent());
-        if ($payload === null) {
+        if (null === $payload) {
             throw new UnexpectedPayloadForEndpoint();
         }
         if (!isset($payload->id)) {
             throw new UnexpectedPayloadForEndpoint();
         }
         $data = [$this->reader->find($payload->id)];
+
         return new Mapper\Book($data);
     }
 }

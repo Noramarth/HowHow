@@ -37,6 +37,7 @@ class EndpointManager
                 return $endpoint;
             }
         }
+
         throw new EndpointNotFound('Unable to find endpoint for domain ' . $domain . ' and method ' . $method);
     }
 }

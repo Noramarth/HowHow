@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\EventListener;
 
-use App\lib\Interfaces\Exception\Breaking;
 use App\lib\ErrorCollector;
+use App\lib\Interfaces\Exception\Breaking;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Symfony\Component\HttpFoundation\JsonResponse;

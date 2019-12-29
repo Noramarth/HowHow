@@ -32,6 +32,7 @@ class Book implements StorageEntity
 
     /**
      * @ORM\OneToMany(targetEntity="Chapter", mappedBy="book", orphanRemoval=true)
+     *
      * @var Chapter[]|Collection
      */
     public Collection $chapters;
@@ -84,6 +85,7 @@ class Book implements StorageEntity
             $this->chapters->add($chapter);
             $chapter->setBook($this);
         }
+
         return $this;
     }
 
@@ -99,7 +101,7 @@ class Book implements StorageEntity
 
     public function hasChapters(): bool
     {
-        return $this->getChapters() === null;
+        return null === $this->getChapters();
     }
 
     public function getBody(): ?string

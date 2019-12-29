@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Symfony\Component\Debug;
 
-use Symfony\Component\ErrorHandler\Debug as GoodDebugClass;
-
 use function class_alias;
 use function class_exists;
-use function sprintf;
-use function trigger_error;
-
 use const E_USER_DEPRECATED;
+use function sprintf;
+use Symfony\Component\ErrorHandler\Debug as GoodDebugClass;
+use function trigger_error;
 
 if (!class_exists(Debug::class, false)) {
     @trigger_error(sprintf(

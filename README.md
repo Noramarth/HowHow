@@ -1,5 +1,3 @@
-Latest load test data using doctrine and 2 levels of joins  plus cache
-
 <pre>k6 run --vus 1000 --duration 1m tests/load/http.js
 
 <font color="#1A92AA">          /\      |‾‾|  /‾‾/  /‾/   </font>
@@ -19,19 +17,20 @@ Latest load test data using doctrine and 2 levels of joins  plus cache
 
 <font color="#44AA44">    ✓ status was 200</font>
 
-    checks.....................: <font color="#1A92AA">100.00%</font> <font color="#116171">✓ 47709</font>  <font color="#116171">✗ 0</font>     
-    data_received..............: <font color="#1A92AA">257 MB</font>  <font color="#116171">4.3 MB/s</font>
-    data_sent..................: <font color="#1A92AA">6.6 MB</font>  <font color="#116171">111 kB/s</font>
-    http_req_blocked...........: avg=<font color="#1A92AA">185.68ms</font> min=<font color="#1A92AA">80.06µs</font>  med=<font color="#1A92AA">140.74µs</font> max=<font color="#1A92AA">15.37s</font>  p(90)=<font color="#1A92AA">1.01s</font>    p(95)=<font color="#1A92AA">1.02s</font>   
-    http_req_connecting........: avg=<font color="#1A92AA">185.59ms</font> min=<font color="#1A92AA">43.67µs</font>  med=<font color="#1A92AA">81.36µs</font>  max=<font color="#1A92AA">15.37s</font>  p(90)=<font color="#1A92AA">1.01s</font>    p(95)=<font color="#1A92AA">1.02s</font>   
-    http_req_duration..........: avg=<font color="#1A92AA">66.14ms</font>  min=<font color="#1A92AA">744.61µs</font> med=<font color="#1A92AA">12.4ms</font>   max=<font color="#1A92AA">26.84s</font>  p(90)=<font color="#1A92AA">47.14ms</font>  p(95)=<font color="#1A92AA">181ms</font>   
-    http_req_receiving.........: avg=<font color="#1A92AA">104.66µs</font> min=<font color="#1A92AA">30.28µs</font>  med=<font color="#1A92AA">78.27µs</font>  max=<font color="#1A92AA">13.13ms</font> p(90)=<font color="#1A92AA">117.07µs</font> p(95)=<font color="#1A92AA">150.48µs</font>
-    http_req_sending...........: avg=<font color="#1A92AA">212.33µs</font> min=<font color="#1A92AA">19.48µs</font>  med=<font color="#1A92AA">50.41µs</font>  max=<font color="#1A92AA">42.74ms</font> p(90)=<font color="#1A92AA">142.88µs</font> p(95)=<font color="#1A92AA">292.06µs</font>
-    http_req_tls_handshaking...: avg=<font color="#1A92AA">0s</font>       min=<font color="#1A92AA">0s</font>       med=<font color="#1A92AA">0s</font>       max=<font color="#1A92AA">0s</font>      p(90)=<font color="#1A92AA">0s</font>       p(95)=<font color="#1A92AA">0s</font>      
-    http_req_waiting...........: avg=<font color="#1A92AA">65.82ms</font>  min=<font color="#1A92AA">636.84µs</font> med=<font color="#1A92AA">12.25ms</font>  max=<font color="#1A92AA">26.83s</font>  p(90)=<font color="#1A92AA">46.91ms</font>  p(95)=<font color="#1A92AA">180.89ms</font>
-    http_reqs..................: <font color="#1A92AA">47709</font>   <font color="#116171">795.148142/s</font>
-    iteration_duration.........: avg=<font color="#1A92AA">1.25s</font>    min=<font color="#1A92AA">1s</font>       med=<font color="#1A92AA">1.01s</font>    max=<font color="#1A92AA">28.86s</font>  p(90)=<font color="#1A92AA">2.02s</font>    p(95)=<font color="#1A92AA">2.05s</font>   
-    iterations.................: <font color="#1A92AA">46759</font>   <font color="#116171">779.314846/s</font>
+    checks.....................: <font color="#1A92AA">100.00%</font> <font color="#116171">✓ 52145</font>  <font color="#116171">✗ 0</font>     
+    data_received..............: <font color="#1A92AA">282 MB</font>  <font color="#116171">4.7 MB/s</font>
+    data_sent..................: <font color="#1A92AA">7.3 MB</font>  <font color="#116171">121 kB/s</font>
+    http_req_blocked...........: avg=<font color="#1A92AA">66ms</font>     min=<font color="#1A92AA">75.65µs</font>  med=<font color="#1A92AA">137.24µs</font> max=<font color="#1A92AA">7.29s</font>    p(90)=<font color="#1A92AA">271.72µs</font> p(95)=<font color="#1A92AA">100.95ms</font>
+    http_req_connecting........: avg=<font color="#1A92AA">65.92ms</font>  min=<font color="#1A92AA">44.09µs</font>  med=<font color="#1A92AA">78.52µs</font>  max=<font color="#1A92AA">7.29s</font>    p(90)=<font color="#1A92AA">180.16µs</font> p(95)=<font color="#1A92AA">100.64ms</font>
+    http_req_duration..........: avg=<font color="#1A92AA">82.53ms</font>  min=<font color="#1A92AA">985.08µs</font> med=<font color="#1A92AA">33.95ms</font>  max=<font color="#1A92AA">54.39s</font>   p(90)=<font color="#1A92AA">38.32ms</font>  p(95)=<font color="#1A92AA">52.54ms</font> 
+    http_req_receiving.........: avg=<font color="#1A92AA">201.58µs</font> min=<font color="#1A92AA">31.96µs</font>  med=<font color="#1A92AA">80.09µs</font>  max=<font color="#1A92AA">129.14ms</font> p(90)=<font color="#1A92AA">106.64µs</font> p(95)=<font color="#1A92AA">123.84µs</font>
+    http_req_sending...........: avg=<font color="#1A92AA">192.89µs</font> min=<font color="#1A92AA">24.18µs</font>  med=<font color="#1A92AA">49.87µs</font>  max=<font color="#1A92AA">50.94ms</font>  p(90)=<font color="#1A92AA">74.5µs</font>   p(95)=<font color="#1A92AA">110.28µs</font>
+    http_req_tls_handshaking...: avg=<font color="#1A92AA">0s</font>       min=<font color="#1A92AA">0s</font>       med=<font color="#1A92AA">0s</font>       max=<font color="#1A92AA">0s</font>       p(90)=<font color="#1A92AA">0s</font>       p(95)=<font color="#1A92AA">0s</font>      
+    http_req_waiting...........: avg=<font color="#1A92AA">82.13ms</font>  min=<font color="#1A92AA">869.65µs</font> med=<font color="#1A92AA">33.81ms</font>  max=<font color="#1A92AA">54.39s</font>   p(90)=<font color="#1A92AA">38.18ms</font>  p(95)=<font color="#1A92AA">52.3ms</font>  
+    http_reqs..................: <font color="#1A92AA">52145</font>   <font color="#116171">869.082469/s</font>
+    iteration_duration.........: avg=<font color="#1A92AA">1.15s</font>    min=<font color="#1A92AA">1s</font>       med=<font color="#1A92AA">1.03s</font>    max=<font color="#1A92AA">56.42s</font>   p(90)=<font color="#1A92AA">1.04s</font>    p(95)=<font color="#1A92AA">1.66s</font>   
+    iterations.................: <font color="#1A92AA">51193</font>   <font color="#116171">853.215818/s</font>
     vus........................: <font color="#1A92AA">1000</font>    <font color="#116171">min=1000</font> <font color="#116171">max=1000</font>
     vus_max....................: <font color="#1A92AA">1000</font>    <font color="#116171">min=1000</font> <font color="#116171">max=1000</font>
+
 </pre>

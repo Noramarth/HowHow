@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\lib;
-
 
 use Doctrine\Common\Collections\Collection;
 use ReflectionClass;
@@ -15,12 +13,13 @@ class ORMClassTools
         $properties = $class->getProperties();
         $result = [];
         foreach ($properties as $property) {
-            $type = (string)$property->getType();
-            if ($type !== Collection::class) {
+            $type = (string) $property->getType();
+            if (Collection::class !== $type) {
                 continue;
             }
             $result[] = $property->getName();
         }
+
         return $result;
     }
 
@@ -30,12 +29,13 @@ class ORMClassTools
         $properties = $class->getProperties();
         $result = [];
         foreach ($properties as $property) {
-            $type = (string)$property->getType();
-            if ($type === Collection::class) {
+            $type = (string) $property->getType();
+            if (Collection::class === $type) {
                 continue;
             }
             $result[] = $property->getName();
         }
+
         return $result;
     }
 
@@ -44,13 +44,15 @@ class ORMClassTools
         if (preg_match('/@var\s+([^\s]+)/', $docBlock, $matches)) {
             list(, $docType) = $matches;
             $type = strstr($docType, '[]', true);
-            if (count(explode('\\', $type)) === 1) {
-                $namespaceParts = explode("\\", $entity);
+            if (1 === count(explode('\\', $type))) {
+                $namespaceParts = explode('\\', $entity);
                 array_pop($namespaceParts);
                 $type = implode('\\', $namespaceParts) . '\\' . $type;
             }
+
             return $type;
         }
+
         return null;
     }
 }

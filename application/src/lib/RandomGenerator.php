@@ -11,7 +11,7 @@ class RandomGenerator
 {
     public static function generateBool(): bool
     {
-        return self::generateInt(0, 1) === 1;
+        return 1 === self::generateInt(0, 1);
     }
 
     public static function generateInt(int $min, int $max): int
@@ -29,6 +29,7 @@ class RandomGenerator
         if (function_exists('mt_rand')) {
             return mt_rand($min, $max);
         }
+
         return rand($min, $max);
     }
 }
