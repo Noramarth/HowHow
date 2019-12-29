@@ -5,65 +5,56 @@ declare(strict_types=1);
 namespace App\Service\Response;
 
 use App\lib\ClassTools;
-use App\lib\DoctrineRedisCache;
 use App\lib\ORMClassTools;
-use Doctrine\Common\Cache\RedisCache;
+use App\lib\RedisCache;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use stdClass;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class Mapper
 {
     public bool $empty = false;
-    public bool $multiple = false;
-
     private array $parents = [];
-
-    private RedisCache $cache;
-
-    private bool $forceCache;
-
+    private CacheInterface $cache;
     private bool $useCache;
 
-    public function __construct()
+    public function __construct(CacheInterface $cache)
     {
-        $this->cache = DoctrineRedisCache::getCache();
+        $this->cache = $cache;
     }
 
-    public function map(array $items, ?int $depth = null, bool $useCache = true, bool $forceCache = false)
+    public function map(array $items, ?int $depth = null, bool $useCache = true)
     {
         $this->useCache = $useCache;
-        $this->forceCache = $forceCache;
         if ($useCache) {
-            $cacheKey = DoctrineRedisCache::getCacheKey($this, __METHOD__, func_get_args());
-            if ($forceCache) {
-                $result = $this->runAllNoCache($items, $depth);
-                $this->cache->save($cacheKey, $result, DoctrineRedisCache::CACHE_EXPIRATION_TIME);
-                return $result;
-            }
-            $result = $this->cache->fetch($cacheKey);
-            if ($result !== false) {
-                return $result;
-            }
-            $result = $this->runAllNoCache($items, $depth);
-            $this->cache->save($cacheKey, $result, DoctrineRedisCache::CACHE_EXPIRATION_TIME);
-            return $result;
+            $cacheKey = RedisCache::makeCacheKey($this, __METHOD__, func_get_args());
+
+            return $this->cache->get($cacheKey, function (ItemInterface $item) use ($items, $depth) {
+                $data = $this->getFreshData($items, $depth);
+                $item->set($data);
+                $item->expiresAfter(RedisCache::CACHE_EXPIRATION_TIME);
+
+                return $data;
+            });
         }
-        return $this->runAllNoCache($items, $depth);
+
+        return $this->getFreshData($items, $depth);
     }
 
-    private function runAllNoCache(array $items, ?int $depth = null)
+    private function getFreshData(array $items, ?int $depth = null)
     {
         $response = new stdClass();
         $depth = $depth ?? 1;
         $itemCount = count($items);
         if ($itemCount > 1) {
-            $this->multiple = true;
-            $response = $this->makeMultipleItemResponse($items, $depth);
+            return $this->makeMultipleItemResponse($items, $depth);
         }
-        if ($itemCount === 1) {
-            $response = $this->singleItemResponse(array_shift($items), $depth);
+        if (1 === $itemCount) {
+            return $this->singleItemResponse(array_shift($items), $depth);
         }
+
         return $response;
     }
 
@@ -75,6 +66,7 @@ class Mapper
             $responseItem = $this->singleItemResponse($item, $depth);
             $data[] = $responseItem;
         }
+
         return $data;
     }
 
@@ -82,42 +74,38 @@ class Mapper
         $item,
         int $maxDepth,
         ?int $currentDepth = 0
-    ): stdClass
-    {
+    ): stdClass {
         if ($this->useCache) {
-            $cacheKey = DoctrineRedisCache::getCacheKey($item, __METHOD__, func_get_args());
-            if ($this->forceCache) {
-                return $this->getFreshlyCachedResult($item, $maxDepth, $cacheKey, $currentDepth);
-            }
-            $cachedResult = $this->cache->fetch($cacheKey);
-            if ($cachedResult !== false) {
-                return $cachedResult;
-            }
-            return $this->getFreshlyCachedResult($item, $maxDepth, $cacheKey, $currentDepth);
-        }
-        return $this->makeSingleItemResponse($item, $maxDepth, $currentDepth);
-    }
+            $cacheKey = RedisCache::makeCacheKey($item, __METHOD__, func_get_args());
+            dump($this->cache);
+            $test = $this->cache->get(
+                $cacheKey,
+                function (ItemInterface $cachedItem) use ($item, $maxDepth, $currentDepth, $cacheKey) {
+                    $result = $this->makeSingleItemResponse($item, $maxDepth, $currentDepth);
+                    dump($result);
+                    ob_flush();
+                    $cachedItem->set($result);
+                    $cachedItem->expiresAfter(RedisCache::CACHE_EXPIRATION_TIME);
 
-    private function getFreshlyCachedResult(
-        $item,
-        int $maxDepth,
-        string $cacheKey,
-        ?int $currentDepth = 0
-    ): stdClass
-    {
-        $result = $this->makeSingleItemResponse($item, $maxDepth, $currentDepth);
-        $this->cache->save($cacheKey, $result, DoctrineRedisCache::CACHE_EXPIRATION_TIME);
-        return $result;
+                    return $result;
+                }
+            );
+            dump($test);
+            ob_flush();
+
+            return $test;
+        }
+
+        return $this->makeSingleItemResponse($item, $maxDepth, $currentDepth);
     }
 
     private function makeSingleItemResponse(
         $item,
         int $maxDepth,
         ?int $currentDepth = 0
-    ): stdClass
-    {
+    ): stdClass {
         $suffix = strtolower(ClassTools::getBaseClassName($item));
-        if ($currentDepth === 0) {
+        if (0 === $currentDepth) {
             $response = $this->addScalarValues($item, $suffix);
         }
         if (!isset($response)) {
@@ -140,6 +128,7 @@ class Mapper
             }
             $this->updateParents($item);
         }
+
         return $response;
     }
 
@@ -150,13 +139,14 @@ class Mapper
         foreach (ORMClassTools::getScalarFields(get_class($item)) as $property) {
             $response->$suffix->$property = $item->$property;
         }
+
         return $response;
     }
 
     private function getChildren(string $parentField, Collection $children, int $maxDepth, int $currentDepth): array
     {
         $responses = [];
-        $currentDepth++;
+        ++$currentDepth;
         foreach ($children as $child) {
             $childResponse = $this->makeSingleItemResponse(
                 $child,
@@ -168,6 +158,7 @@ class Mapper
             $response->$fieldName = $childResponse->$fieldName;
             $responses[] = $response;
         }
+
         return $responses;
     }
 

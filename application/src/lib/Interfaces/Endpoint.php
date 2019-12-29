@@ -7,5 +7,6 @@ namespace App\lib\Interfaces;
 interface Endpoint
 {
     public static function supports(string $domain, string $method): bool;
+
     public function handle();
 }

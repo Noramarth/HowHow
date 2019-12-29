@@ -20,6 +20,7 @@ services:
             - {name: controller.service_arguments}
 
     App\Service\:
+        autowire: true
         resource: '../../src/Service'
 
     App\DataManager\:

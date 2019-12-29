@@ -29,7 +29,8 @@
     "doctrine/doctrine-fixtures-bundle": "*",
     "symfony/maker-bundle": "^1.14.0",
     "symfony/flex": "^1.6.0",
-    "fzaninotto/faker": "*"
+    "fzaninotto/faker": "*",
+    "blackfire/php-sdk": "*"
   },
   "extra": {
     "config-dir": "Drift/config"

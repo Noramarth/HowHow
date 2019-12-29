@@ -24,7 +24,6 @@ class Chapter
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-
     public ?string $title;
     /**
      * @ORM\Column(type="text", nullable=true)
@@ -33,6 +32,7 @@ class Chapter
 
     /**
      * @ORM\OneToMany(targetEntity="Document", mappedBy="chapter", orphanRemoval=true)
+     *
      * @var Document[]|Collection
      */
     public ?Collection $documents;
@@ -47,21 +47,15 @@ class Chapter
         $this->documents = new ArrayCollection();
     }
 
-    /**
-     * @return Book
-     */
     public function getBook(): Book
     {
         return $this->book;
     }
 
-    /**
-     * @param Book $book
-     * @return Chapter
-     */
     public function setBook(Book $book): Chapter
     {
         $this->book = $book;
+
         return $this;
     }
 
@@ -107,6 +101,7 @@ class Chapter
             $this->documents->add($document);
             $document->setChapter($this);
         }
+
         return $this;
     }
 
@@ -116,6 +111,7 @@ class Chapter
             $this->documents->removeElement($document);
             $document->setChapter(null);
         }
+
         return $this;
     }
 
