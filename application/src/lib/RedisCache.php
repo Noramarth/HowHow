@@ -10,6 +10,7 @@ class RedisCache
 {
     public const CACHE_EXPIRATION_TIME = 3600;
 
+    //TODO: Make this into something way less CPU costly
     public static function makeCacheKey($object, string $methodName, array $args): string
     {
         $key = ClassTools::getBaseClassName($object) .

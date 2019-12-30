@@ -28,8 +28,8 @@ class GetById extends Endpoint implements EndpointInterface
 
     public function handle(): ?SerializableResponse
     {
-        $request = $this->request->getCurrentRequest();
-        $payload = json_decode($request->getContent());
+        $currentRequest = $this->request->getCurrentRequest();
+        $payload = json_decode($currentRequest->getContent());
         if (null === $payload) {
             throw new UnexpectedPayloadForEndpoint();
         }

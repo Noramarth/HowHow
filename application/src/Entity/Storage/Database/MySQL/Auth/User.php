@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\Storage\Database\MySQL\Auth;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\Table;
@@ -53,6 +54,22 @@ class User
      * @ORM\OneToOne(targetEntity="PrivateUserInformation", fetch="EXTRA_LAZY", mappedBy="privateUserId")
      */
     public PrivateUserInformation $privateUserId;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    public DateTime $dateAdded;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    public DateTime $dateModified;
+
+    public function __construct()
+    {
+        $this->dateAdded = new DateTime();
+        $this->dateModified = $this->dateAdded;
+    }
 
     /**
      * @return int

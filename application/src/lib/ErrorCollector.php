@@ -16,6 +16,9 @@ class ErrorCollector
         self::class,
         Exception::class,
     ];
+
+    private const CLASS_KEY = 'class';
+
     private static ?ErrorCollector $instance = null;
     private array $exceptions = [];
 
@@ -43,10 +46,10 @@ class ErrorCollector
 
     public function flush(): array
     {
-        $exceptions = $this->exceptions;
+        $exceptionsSave = $this->exceptions;
         $this->reset();
 
-        return $exceptions;
+        return $exceptionsSave;
     }
 
     public function reset(): void
@@ -74,12 +77,10 @@ class ErrorCollector
     private static function getCallingClass(): string
     {
         $trace = debug_backtrace();
-        $class = $trace[1]['class'];
+        $class = $trace[1][self::CLASS_KEY];
         for ($i = 1; $i < count($trace); ++$i) {
-            if (isset($trace[$i])) {
-                if ($class != $trace[$i]['class']) {
-                    return $trace[$i]['class'];
-                }
+            if (isset($trace[$i]) && $class != $trace[$i][self::CLASS_KEY]) {
+                return $trace[$i][self::CLASS_KEY];
             }
         }
     }

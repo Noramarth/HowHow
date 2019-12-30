@@ -16,8 +16,6 @@ use ReflectionException;
 class Maker
 {
     /**
-     * @return ArrayCollection|null
-     *
      * @throws ReflectionException
      */
     public static function make(
@@ -25,33 +23,15 @@ class Maker
         string $entity,
         ObjectManager $manager,
         string $parent = null
-    ): ArrayCollection {
+    ): ?ArrayCollection
+    {
         $faker = Faker\Factory::create();
         $faker->addProvider(new Faker\Provider\Lorem($faker));
         $reflectionClass = new ReflectionClass($entity);
-        $properties = $reflectionClass->getProperties();
-        $propertyTypes = [];
-        foreach ($properties as $property) {
-            $isObject = false;
-            $name = $property->getName();
-            if ('id' === $name) {
-                continue;
-            }
-            $type = (string) $property->getType();
-            if ($type === $parent) {
-                continue;
-            }
-            if (Collection::class === $type) {
-                $isObject = true;
-                $type = ORMClassTools::getClassType($property->getDocComment(), $entity);
-            }
-            $propertyTypes[$name]['type'] = $type;
-            $propertyTypes[$name]['isObject'] = $isObject;
-        }
         $items = new ArrayCollection();
         for ($i = 0; $i < $numberOfItems; ++$i) {
             $item = new $entity();
-            foreach ($propertyTypes as $property => $details) {
+            foreach (self::getPropertyTypes($reflectionClass->getProperties(), $parent) as $property => $details) {
                 if ($details['isObject']) {
                     if (false === RandomGenerator::generateBool()) {
                         continue;
@@ -77,6 +57,29 @@ class Maker
         }
 
         return $items;
+    }
+
+    private static function getPropertyTypes($properties, string $parent): array
+    {
+        $propertyTypes = [];
+        foreach ($properties as $property) {
+            $isObject = false;
+            $name = $property->getName();
+            if ('id' === $name) {
+                continue;
+            }
+            $type = (string)$property->getType();
+            if ($type === $parent) {
+                continue;
+            }
+            if (Collection::class === $type) {
+                $isObject = true;
+                $type = ORMClassTools::getClassType($property->getDocComment(), $entity);
+            }
+            $propertyTypes[$name]['type'] = $type;
+            $propertyTypes[$name]['isObject'] = $isObject;
+        }
+        return $propertyTypes;
     }
 
     private static function getFakerType(string $property, string $type): string

@@ -21,30 +21,30 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class Main
 {
-    private EndpointManager $endpoint;
+    private EndpointManager $endpointManager;
 
     private LoggerInterface $logger;
 
-    public function __construct(EndpointManager $endpoint, LoggerInterface $logger)
+    public function __construct(EndpointManager $endpointManager, LoggerInterface $logger)
     {
-        $this->endpoint = $endpoint;
+        $this->endpointManager = $endpointManager;
         $this->logger = $logger;
     }
 
     /**
      * Default path.
      *
+     * @param Request $request
      * @return FulfilledPromise|JsonResponse
      *
-     * @throws VisibilityBreach
      * @throws BadHeaders
      * @throws EndpointNotFound
+     * @throws VisibilityBreach
      */
     public function __invoke(Request $request)
     {
         try {
-            $response = $this->endpoint->get()->handle();
-
+            $response = $this->endpointManager->getEndpoint()->handle();
             return new FulfilledPromise(
                 new JsonResponse($response, Response::HTTP_OK)
             );

@@ -19,8 +19,7 @@ class RandomGenerator
         if (function_exists('random_int')) {
             try {
                 return random_int($min, $max);
-            } catch (TypeError $typeError) {
-            } catch (Exception $exception) {
+            } catch (TypeError | Exception $typeError) {
                 @trigger_error(sprintf(
                     'Unable to muster enough entropy'
                 ), E_USER_NOTICE);
@@ -29,7 +28,6 @@ class RandomGenerator
         if (function_exists('mt_rand')) {
             return mt_rand($min, $max);
         }
-
         return rand($min, $max);
     }
 }

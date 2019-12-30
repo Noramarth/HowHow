@@ -57,21 +57,6 @@ class PrivateUserInformation
      */
     public ?Biography $bio;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    public DateTime $dateAdded;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    public DateTime $dateModified;
-
-    public function __construct()
-    {
-        $this->dateAdded = new DateTime();
-        $this->dateModified = $this->dateAdded;
-    }
 
     public function getPrivateUserId(): ?int
     {
@@ -165,30 +150,6 @@ class PrivateUserInformation
     public function setBio(?Biography $bio): PrivateUserInformation
     {
         $this->bio = $bio;
-
-        return $this;
-    }
-
-    public function getDateAdded(): DateTime
-    {
-        return $this->dateAdded;
-    }
-
-    public function setDateAdded(DateTime $dateAdded): PrivateUserInformation
-    {
-        $this->dateAdded = $dateAdded;
-
-        return $this;
-    }
-
-    public function getDateModified(): DateTime
-    {
-        return $this->dateModified;
-    }
-
-    public function setDateModified(DateTime $dateModified): PrivateUserInformation
-    {
-        $this->dateModified = $dateModified;
 
         return $this;
     }

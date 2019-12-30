@@ -25,7 +25,7 @@ class EndpointManager
      * @throws EndpointNotFound
      * @throws BadHeaders
      */
-    public function get(): Endpoint
+    public function getEndpoint(): Endpoint
     {
         $domain = lcfirst($this->request->getCurrentRequest()->headers->get(Connection::DOMAIN_HEADER));
         $method = lcfirst($this->request->getCurrentRequest()->headers->get(Connection::METHOD_HEADER));

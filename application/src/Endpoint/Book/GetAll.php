@@ -29,8 +29,8 @@ class GetAll extends Endpoint implements EndpointInterface
 
     public function handle()
     {
-        $request = $this->request->getCurrentRequest();
-        $payload = json_decode($request->getContent());
+        $currentRequest = $this->request->getCurrentRequest();
+        $payload = json_decode($currentRequest->getContent());
         $depth = isset($payload->depth) ? $payload->depth : null;
         if (null !== $payload && null === $depth) {
             throw new UnexpectedPayloadForEndpoint();
