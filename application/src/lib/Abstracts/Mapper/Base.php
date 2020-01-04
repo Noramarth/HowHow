@@ -4,140 +4,128 @@ declare(strict_types=1);
 
 namespace App\lib\Abstracts\Mapper;
 
-use ReflectionClass;
-use ReflectionException;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManagerInterface;
 use stdClass;
+use Symfony\Component\Cache\Adapter\NullAdapter;
+use Symfony\Contracts\Cache\CacheInterface;
 
 abstract class Base
 {
     protected bool $useCache = true;
+    protected CacheInterface $cache;
+    private bool $recursive = false;
+    private int $recursionsDepth = 0;
+    private EntityManagerInterface $entityManager;
 
-    private array $parents = [];
-
-    /**
-     * @throws ReflectionException
-     */
-    public function mapObject(object $item)
+    public function __construct(CacheInterface $cache, EntityManagerInterface $_em)
     {
-        $map = new stdClass();
-        foreach ($this->getObjectValues($item) as $key => $value) {
-            $map->$key = $value;
-        }
-        return $map;
+        $this->cache = $cache;
+        $this->entityManager = $_em;
     }
 
-    /**
-     * @throws ReflectionException
-     */
-    private function getObjectValues(object $item): array
-    {
-        $content = [];
-        $reflectedObject = new ReflectionClass($item);
-        $properties = $reflectedObject->getProperties();
-        foreach ($properties as $property) {
-            $key = $property->getName();
-            $value = $property->getValue();
-            if (is_object($value) && $this->isNotParent($value)) {
-                $content[$key] = $value;
-            }
-        }
-        return $content;
-    }
-
-    private function isNotParent(object $item): bool
-    {
-        return array_search(get_class($item), $this->parents) === false;
-    }
-
-    public function mapArray(array $item): stdClass
-    {
-        $map = new stdClass();
-        foreach ($item as $key => $value) {
-            $map->$key = $value;
-        }
-        return $map;
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    public function mapArrayRecursive(array $item, ?int $depth = 1): stdClass
-    {
-        $map = new stdClass();
-        foreach ($this->parseArrayRecursive($item, $depth) as $key => $value) {
-            $map->$key = $value;
-        }
-        return $map;
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    private function parseArrayRecursive(array $item, ?int $depth = 1): ?array
-    {
-        $content = [];
-        if ($depth < 0) {
-            return null;
-        }
-        foreach ($item as $key => $value) {
-            $currentValue = $this->getCurrentValue($value, $depth);
-            if (isset($currentValue) && $currentValue !== null) {
-                $content[$key] = $currentValue;
-            }
-        }
-        return $content;
-    }
-
-    /**
-     * @param mixed $value
-     * @param int|null $depth
-     * @return mixed|null
-     * @throws ReflectionException
-     */
-    private function getCurrentValue($value, ?int $depth = 1)
-    {
-        if (is_array($value)) {
-            return $this->parseArrayRecursive($value, --$depth);
-        }
-        if (is_object($value)) {
-            return $this->parseObjectRecursive($value, --$depth);
-        }
-        return $value;
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    public function parseObjectRecursive(object $item, ?int $depth = 1): ?array
-    {
-        $content = [];
-        if ($depth < 0) {
-            return null;
-        }
-        $this->parents[] = get_class($item);
-        foreach ($this->getObjectValues($item) as $key => $value) {
-            $currentValue = $this->getCurrentValue($value, $depth);
-            if (isset($currentValue) && $currentValue !== null) {
-                $content[$key] = $currentValue;
-            }
-        }
-        return $content;
-    }
-
-    /**
-     * @throws ReflectionException
-     */
-    public function mapObjectRecursive(object $item, ?int $depth = 1)
-    {
-        $map = new stdClass();
-        foreach ($this->parseObjectRecursive($item, $depth) as $key => $value) {
-            $map->$key = $value;
-        }
-        return $map;
-    }
-
-    public function ignoreCache(): void
+    public function ignoreCache(): self
     {
         $this->useCache = false;
+        $this->cache = new NullAdapter();
+        return $this;
+    }
+
+    public function recursionsDepth(int $depth): self
+    {
+        $this->recursionsDepth = $depth;
+        return $this;
+    }
+
+    public function parseMultiple(array $items): array
+    {
+        $result = [];
+        foreach ($items as $item) {
+            $result[] = $this->parseOne($item);
+        }
+        return $result;
+    }
+
+    public function parseOne(object $item, ?int $depth = null): stdClass
+    {
+        if ($depth === null) {
+            $depth = $this->recursionsDepth;
+        }
+        $result = new stdClass();
+        foreach (get_object_vars($item) as $property => $value) {
+            if ($value instanceof Collection) {
+                $result->$property = $this->getCollectionData($value, $depth);
+                continue;
+            }
+            if (is_object($value) && $this->isORMEntity($value)) {
+                $result->$property = $this->getEntityData($value, $depth);
+                continue;
+            }
+            $result->$property = $value;
+        }
+        return $result;
+    }
+
+    private function getCollectionData(Collection $collection, $depth): array
+    {
+        if (!$this->recursive) {
+            return $this->getChildCollectionIds($collection);
+        }
+    }
+
+    private function getChildCollectionIds(Collection $collection): array
+    {
+        $results = [];
+        foreach ($collection as $item) {
+            if ($this->isORMEntity($item)) {
+                $primaryKeys = $this->getORMEntityPrimaryKey($item);
+                $results[] = $primaryKeys;
+                continue;
+            }
+            if (property_exists($item, 'id')) {
+                $resultObject = new stdClass();
+                $resultObject->id = $item->id;
+                $results[] = $resultObject;
+                continue;
+            }
+            if (method_exists($item, 'getId')) {
+                $resultObject = new stdClass();
+                $resultObject->id = $item->getId();
+                $results[] = $resultObject;
+            }
+        }
+        return $results;
+    }
+
+    private function isORMEntity(object $item): bool
+    {
+        return $this->entityManager->getMetadataFactory()->hasMetadataFor(get_class($item));
+    }
+
+    private function getORMEntityPrimaryKey(object $entity): stdClass
+    {
+        $results = new stdClass();
+        $metadata = $this->entityManager
+            ->getClassMetadata(get_class($entity));
+        $primaryKeyFields = $metadata->getIdentifierFieldNames();
+        foreach ($primaryKeyFields as $primaryKeyField) {
+            $results->$primaryKeyField = $entity->$primaryKeyField;
+
+        }
+        return $results;
+    }
+
+    private function getEntityData(object $entity, int $depth)
+    {
+        if (!$this->recursive) {
+            return $this->getORMEntityPrimaryKey($entity);
+        }
+    }
+
+    protected function setRecursive(): self
+    {
+        $this->recursive = true;
+        return $this;
     }
 }
+

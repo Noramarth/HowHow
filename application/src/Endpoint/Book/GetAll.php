@@ -9,6 +9,8 @@ use App\Exception\UnexpectedPayloadForEndpoint;
 use App\lib\Abstracts\Connection\Endpoint;
 use App\lib\Interfaces\Endpoint as EndpointInterface;
 use App\Service\Response\Mapper\Book;
+use Psr\Cache\InvalidArgumentException;
+use ReflectionException;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class GetAll extends Endpoint implements EndpointInterface
@@ -27,6 +29,11 @@ class GetAll extends Endpoint implements EndpointInterface
         $this->mapper = $mapper;
     }
 
+    /**
+     * @throws UnexpectedPayloadForEndpoint
+     * @throws InvalidArgumentException
+     * @throws ReflectionException
+     */
     public function handle()
     {
         $currentRequest = $this->request->getCurrentRequest();
@@ -35,7 +42,6 @@ class GetAll extends Endpoint implements EndpointInterface
         if (null !== $payload && null === $depth) {
             throw new UnexpectedPayloadForEndpoint();
         }
-
-        return $this->mapper->map($this->reader->findAll(), $depth);
+        return $this->mapper->ignoreCache()->mapMultiple($this->reader->findAll(), $depth);
     }
 }

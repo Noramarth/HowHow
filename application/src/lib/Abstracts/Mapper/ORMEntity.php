@@ -9,13 +9,4 @@ use Symfony\Contracts\Cache\CacheInterface;
 
 abstract class ORMEntity extends Base
 {
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(CacheInterface $cache, EntityManagerInterface $_em)
-    {
-        $this->entityManager = $_em;
-        parent::__construct($cache);
-    }
-
-
 }

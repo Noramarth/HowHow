@@ -10,6 +10,7 @@ use App\Exception\UnexpectedPayloadForEndpoint;
 use App\lib\Abstracts\Connection\Endpoint;
 use App\lib\Interfaces\Endpoint as EndpointInterface;
 use App\lib\Interfaces\SerializableResponse;
+use App\Service\Response\Mapper\Book;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class GetById extends Endpoint implements EndpointInterface
@@ -19,11 +20,13 @@ class GetById extends Endpoint implements EndpointInterface
 
     private RequestStack $request;
     private Reader $reader;
+    private Book $mapper;
 
-    public function __construct(RequestStack $requestStack, Reader $reader)
+    public function __construct(RequestStack $requestStack, Reader $reader, Book $mapper)
     {
         $this->request = $requestStack;
         $this->reader = $reader;
+        $this->mapper = $mapper;
     }
 
     public function handle(): ?SerializableResponse
@@ -36,8 +39,8 @@ class GetById extends Endpoint implements EndpointInterface
         if (!isset($payload->id)) {
             throw new UnexpectedPayloadForEndpoint();
         }
-        $data = [$this->reader->find($payload->id)];
+        $data = $this->reader->find($payload->id);
 
-        return new Mapper\Book($data);
+        return $this->mapper->mapOne($data);
     }
 }

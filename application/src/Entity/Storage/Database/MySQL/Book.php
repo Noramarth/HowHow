@@ -42,6 +42,7 @@ class Book implements StorageEntity
      */
     public ?string $body;
 
+
     public function __construct()
     {
         $this->chapters = new ArrayCollection();
